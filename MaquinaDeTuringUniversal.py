@@ -39,16 +39,16 @@ class MaquinaDeTuringUniversal:
                 print("transacao com 0 errados")
                 
             #verifica se tem apenas 1's na transicao
-            elementosTransicao = transicao.split("0")
+            elementosTransicao = transacao.split("0")
             for elementoTransicao in elementosTransicao:
                 for digito in elementoTransicao:
-                    if digito != 1:
-                        print("elementos da transições nao são apenas 1's")
+                    if digito != "1":
+                        print("elementos da transicoes nao sao apenas 1's")
 
             #verifica a direção da transacao
             direcao = elementosTransicao[4]
-            if len(direcao) != 1 or len(direcao) != 2:
-                print("transacao com direção desconhecida")
+            if len(direcao) != 1 and len(direcao) != 2:
+                print("transacao com direcao desconhecida")
 
         #verifica o determinismo
             headTransicoes.append(elementosTransicao[0] + "0" + elementosTransicao[1])
@@ -62,28 +62,61 @@ class MaquinaDeTuringUniversal:
             if len(letra) > 3 and len(letra) < 1:
                 print("Palavra em formato errado")
                 
-        self.fita1 = Fita(transacoes)
+        self.fita1 = Fita("000" + split[1] + "000")
         self.fita2 = Fita("1")
         self.fita3 = Fita(palavra)
+        self.fita3.mudarTransicao(DIREITA, BLANK)
 
     def __str__(self):
-        retorno  = self.fita1.__str__() + "\n"
-        retorno += self.fita2.__str__() + "\n"
-        retorno += self.fita3.__str__()
+        retorno  = "Fita 1: \n" + self.fita1.__str__() + "\n\n" 
+        retorno += "Fita 2: \n" +self.fita2.__str__() + "\n\n"
+        retorno += "Fita 3: \n" +self.fita3.__str__()
         return retorno
 
-import re
-p = re.compile("^000 \b(1+01+01+01+01+00)\b 0 \b(1|l1)0\b* + 000$")
-print(re.search(p, "000101110110111010011010111010100110110111101101001110110111011010011101110111110111011001111010111101010011110111011111011101100011101011011011000"))
+    def rodarTransicao(self):
+        
+        #achar estado
+        estado = ""
+        self.fita2.rebobinar()
+        self.fita2.mudarTransicao(DIREITA, BLANK)
+        while self.fita2.pegarSimbulo() != BLANK:
+            estado += self.fita2.mudarTransicao(DIREITA, self.fita2.pegarSimbulo())
+        
+        #achar simbulo
+        simbulo = ""
+        voltar = 0
+        while self.fita3.pegarSimbulo() != "0":
+            simbulo += self.fita3.mudarTransicao(DIREITA, self.fita3.pegarSimbulo())
+            voltar += 1
+        for i in range(voltar):
+            self.fita3.mudarTransicao(ESQUERDA, self.fita3.pegarSimbulo())            
+        
+        
+        transacao = "00" + estado + "0" +simbulo + "0"
+        print(self.fita1.fita.find(transacao))
+        """
+       
+        transicao = estado + "0" + self.fita2.pegarSimbulo()
+        self.transacoes.find(transacao)
+        self.__str__()
+        print("\n__________________\n")"""
+        
 
-oi = "000101011011101001010111010100110110111101101001110110111011010011101110111110111011001111010111101010011110111011111011101100011101011011011000"
+#import re
+#p = re.compile("^000 \b(1+01+01+01+01+00)\b 0 \b(1|l1)0\b* + 000$")
+#print(re.search(p, "000101110110111010011010111010100110110111101101001110110111011010011101110111110111011001111010111101010011110111011111011101100011101011011011000"))
+mc = "000"
+mc += "1011101101110100"
+mc += "11010111010100"
+mc += "11011011110110100"
+mc += "11101101110110100"
+mc += "1110111011111011101100"
+mc += "11110101111010100"
+mc += "111101110111110111011"
+mc += "000"
+mc += "11101011011011"
+mc += "000"
 
-transacoes = oi.split("000")[1].split("00")
-headTransicoes = list()
-for transicao in transacoes:
-    print(transicao)
-    elementosTransicao = transicao.split("0")
-    
-print(len(headTransicoes))
-print(len(set(headTransicoes)))
-    
+mtu = MaquinaDeTuringUniversal(mc)
+mtu.rodarTransicao()
+
