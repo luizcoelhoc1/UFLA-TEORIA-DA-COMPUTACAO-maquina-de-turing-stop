@@ -30,7 +30,8 @@ class MaquinaDeTuringUniversal:
             print("nao possui apenas 3 separadores 000")
 
         #verifica transações corretas
-        transacoes = split[1].split("00")        
+        transacoes = split[1].split("00")    
+        headTransicoes = list()  #para verificar o determinismo  
         for transacao in transacoes:
             
             #verifica se a transicao é uma quintupla
@@ -49,6 +50,11 @@ class MaquinaDeTuringUniversal:
             if len(direcao) != 1 or len(direcao) != 2:
                 print("transacao com direção desconhecida")
 
+        #verifica o determinismo
+            headTransicoes.append(elementosTransicao[0] + "0" + elementosTransicao[1])
+        if len(set(headTransicoes)) != len(headTransicoes):
+            print("maquina nao deterministica")
+
         #verifica palavra
         palavra = split[2]
         letras = palavra.split("0")
@@ -65,16 +71,19 @@ class MaquinaDeTuringUniversal:
         retorno += self.fita2.__str__() + "\n"
         retorno += self.fita3.__str__()
         return retorno
-"""
+
 import re
 p = re.compile("^000 \b(1+01+01+01+01+00)\b 0 \b(1|l1)0\b* + 000$")
 print(re.search(p, "000101110110111010011010111010100110110111101101001110110111011010011101110111110111011001111010111101010011110111011111011101100011101011011011000"))
 
-oi = "000101110110111010011010111010100110110111101101001110110111011010011101110111110111011001111010111101010011110111011111011101100011101011011011000"
+oi = "000101011011101001010111010100110110111101101001110110111011010011101110111110111011001111010111101010011110111011111011101100011101011011011000"
 
 transacoes = oi.split("000")[1].split("00")
+headTransicoes = list()
 for transicao in transacoes:
     print(transicao)
     elementosTransicao = transicao.split("0")
-    print()
-"""
+    
+print(len(headTransicoes))
+print(len(set(headTransicoes)))
+    
