@@ -23,7 +23,7 @@ class Fita:
     def mudarTransicao(self, direcao, simbulo):
     #Quebrar a Fita indo pra ESQUERDA no final da fita
         if self.cabecote == 0 and direcao == ESQUERDA:
-            raise Exception('Fita estourada')
+            raise Exception('Fita estouradaa')
 
     #Simulando Fita Infinita
         if len(self.fita) == (self.cabecote+1) and direcao == DIREITA:
@@ -45,7 +45,7 @@ class Fita:
     """
     Retorna o simbulo quo cabeçote está apontando
     """
-    def pegarSimbulo (self):
+    def pegarSimbolo (self):
         return self.fita[self.cabecote]
 
     """
