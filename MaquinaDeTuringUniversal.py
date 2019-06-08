@@ -74,25 +74,28 @@ class MaquinaDeTuringUniversal:
         retorno += "Fita 3: \n" +self.fita3.__str__()
         return retorno
 
-    def rodarTransicao(self):
-        
-        #achar estado
+    def estadoAtualMT(self): 
         estado = ""
         self.fita2.rebobinar()
         self.fita2.mudarTransicao(DIREITA, BLANK)
         while self.fita2.pegarSimbolo() != BLANK:
             estado += self.fita2.mudarTransicao(DIREITA, self.fita2.pegarSimbolo())
-        
-        #achar simbulo
-        simbulo = ""
+        return estado
+    
+    def simboloAtualMT(self):
+        simbolo = ""
         voltar = 0
         while self.fita3.pegarSimbolo() != "0":
-            simbulo += self.fita3.mudarTransicao(DIREITA, self.fita3.pegarSimbolo())
+            simbolo += self.fita3.mudarTransicao(DIREITA, self.fita3.pegarSimbolo())
             voltar += 1
         for i in range(voltar):
-            self.fita3.mudarTransicao(ESQUERDA, self.fita3.pegarSimbolo())            
+            self.fita3.mudarTransicao(ESQUERDA, self.fita3.pegarSimbolo())           
+        return simbolo
+
+    def rodarTransicao(self):
         
-        posicaoTransacao = self.fita1.fita.find("00" + estado + "0" +simbulo + "0") + 2
+        posicaoTransacao = self.fita1.fita.find("00" + self.estadoAtualMT() + "0" + self.simboloAtualMT() + "0") + 2
+        
         """
         if posicaoTransacao == -1:
             return True"""
@@ -106,26 +109,20 @@ class MaquinaDeTuringUniversal:
             transacao += self.fita1.mudarTransicao(DIREITA, self.fita1.pegarSimbolo())
             posicaoTransacao += 1
         transacao = transacao[:-2]
-        
-        
         elementosTransacao = transacao.split("0")
-        print(elementosTransacao[2])
+        
+        #muda MT de estado
         self.fita2.recomecarFita(elementosTransacao[2])
         
-        if len(elementosTransacao[1]) > len(elementosTransacao[3]):
-            i = 0
-            while elementosTransacao[2][i:] != "":
-                self.fita3.mudarTransicao(DIREITA, elementosTransacao[2][i])
-            
-            
+        
         if len(elementosTransacao[1]) > len(elementosTransacao[3]):
             for i in elementosTransacao[2]:
                 self.fita3.mudarTransicao(DIREITA, i)
             while fita3.pegarSimbolo() != "0":
                 self.fita3.mudarTransicao(DIREITA, TRASH)
             
-            while temLixoEsquerda(self.fita3):
-                removerLixoAEsquerda(self.fita3)
+            while self.temLixoEsquerda(self.fita3):
+                self.removerLixoAEsquerda(self.fita3)
             
             self.fita3.mudarTransicao(ESQUERDA, self.fita3.pegarSimbolo())
             while self.fita3.pegarSimbolo() == "1":
@@ -203,4 +200,63 @@ mc += "11101011011011"
 mc += "000"
 
 mtu = MaquinaDeTuringUniversal(mc)
-mtu.rodarTransicao()
+#mtu.rodarTransicao()
+
+
+def criarBlankDireita(fita):
+    #grava primeiro simbolo e ponto de partida
+    simboloAntigo = fita.mudarTransicao(DIREITA, TRASH)
+    
+    #vai ate o final da fita
+    while fita.pegarSimbolo() != BLANK: 
+        fita.mudarTransicao(DIREITA, fita.pegarSimbolo())
+    fita.mudarTransicao(ESQUERDA, fita.pegarSimbolo())
+    
+    #volta dando swap até onde estava
+    while fita.pegarSimbolo() != TRASH:
+        simbolo = fita.mudarTransicao(DIREITA, fita.pegarSimbolo())
+        fita.mudarTransicao(ESQUERDA, simbolo)
+        fita.mudarTransicao(ESQUERDA, BLANK)
+    
+    #volta o simbulo de começo e volta a cabeça de leitura e escrita
+    fita.mudarTransicao(DIREITA, simboloAntigo)
+    fita.mudarTransicao(ESQUERDA, fita.pegarSimbolo())
+
+def esquerdaSimboloMT(fita, separador):
+    fita.mudarTransicao(ESQUERDA, fita.pegarSimbolo())
+    if fita.pegarSimbolo() == BLANK:
+        fita.mudarTransicao(DIREITA, fita.pegarSimbolo())
+    else:    
+        fita.mudarTransicao(ESQUERDA, fita.pegarSimbolo())
+        while fita.pegarSimbolo() != separador and fita.pegarSimbolo() != BLANK:
+            fita.mudarTransicao(ESQUERDA, fita.pegarSimbolo())
+        fita.mudarTransicao(DIREITA, fita.pegarSimbolo())
+        
+def direitaSimboloMT(fita, separador):
+    while fita.pegarSimbolo() != separador and fita.pegarSimbolo() != BLANK:
+        fita.mudarTransicao(DIREITA, fita.pegarSimbolo())
+    if fita.pegarSimbolo() == BLANK:
+        fita.mudarTransicao(ESQUERDA, fita.pegarSimbolo())
+        esquerdaSimboloMT(fita, "0")
+    else:
+        fita.mudarTransicao(DIREITA, fita.pegarSimbolo())  
+
+    
+
+fita3 = Fita("1011011011011")
+elementosTransacao = ["1", "11", "11", "11111111111111111", "1"]
+fita3.mudarTransicao(DIREITA, fita3.pegarSimbolo())
+
+
+#substitui o simbolo da MT pelo novo simbolo que indica a transicao
+for i in range(len(elementosTransacao[3])):
+    if fita3.pegarSimbolo() == "0":
+        fita3.mudarTransicao(ESQUERDA, fita3.pegarSimbolo())
+        criarBlankDireita(fita3)
+        fita3.mudarTransicao(DIREITA, fita3.pegarSimbolo())
+    fita3.mudarTransicao(DIREITA, elementosTransacao[3][i])
+
+#retorna cabeça de leitura
+fita3.mudarTransicao(DIREITA, fita3.pegarSimbolo())
+esquerdaSimboloMT(fita3, "0")
+print(fita3)
