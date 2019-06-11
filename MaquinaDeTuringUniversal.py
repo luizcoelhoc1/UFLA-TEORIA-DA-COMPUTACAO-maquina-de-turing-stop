@@ -9,6 +9,8 @@ DIREITA = True
 ESQUERDA = False
 BLANK = "B"
 TRASH = "#"
+LEFT = "11"
+RIGHT = "1"
 
 from Fita import Fita
 
@@ -62,18 +64,25 @@ class MaquinaDeTuringUniversal:
         for letra in letras:
             if len(letra) > 3 and len(letra) < 1:
                 print("Palavra em formato errado")
-                
+
+        #inicializa fitas            
         self.fita1 = Fita("000" + split[1] + "000")
         self.fita2 = Fita("1")
         self.fita3 = Fita(palavra)
         self.fita3.mudarTransicao(DIREITA, BLANK)
 
+    """
+    Retorna as três fitas no print do objeto
+    """
     def __str__(self):
         retorno  = "Fita 1: \n" + self.fita1.__str__() + "\n\n" 
         retorno += "Fita 2: \n" +self.fita2.__str__() + "\n\n"
         retorno += "Fita 3: \n" +self.fita3.__str__()
         return retorno
 
+    """
+    Retorna o estado atual da MT simulada
+    """
     def estadoAtualMT(self): 
         estado = ""
         self.fita2.rebobinar()
@@ -81,7 +90,10 @@ class MaquinaDeTuringUniversal:
         while self.fita2.pegarSimbolo() != BLANK:
             estado += self.fita2.mudarTransicao(DIREITA, self.fita2.pegarSimbolo())
         return estado
-    
+
+    """
+    Retorna o simbolo atual da MT simulada
+    """
     def simboloAtualMT(self):
         simbolo = ""
         voltar = 0
@@ -92,15 +104,18 @@ class MaquinaDeTuringUniversal:
             self.fita3.mudarTransicao(ESQUERDA, self.fita3.pegarSimbolo())           
         return simbolo
 
+    """
+    simula uma transição da maquina de turing
+    """
     def rodarTransicao(self):
-        
+        #acha transação
         posicaoTransacao = self.fita1.fita.find("00" + self.estadoAtualMT() + "0" + self.simboloAtualMT() + "0") + 2
-        
-        """
+
+        #aceita caso não ache a transição
         if posicaoTransacao == -1:
-            return True"""
-            
-        #pega a transacao
+            return True
+
+        #pega a transicao
         self.fita1.rebobinar()
         while self.fita1.cabecote != posicaoTransacao:
             self.fita1.mudarTransicao(DIREITA, self.fita1.pegarSimbolo())
@@ -114,41 +129,53 @@ class MaquinaDeTuringUniversal:
         #muda MT de estado
         self.fita2.recomecarFita(elementosTransacao[2])
         
-        
+        #muda Simbolo
         if len(elementosTransacao[1]) > len(elementosTransacao[3]):
+            #substitui "1" no "111" fazendo "1##"
             for i in elementosTransacao[2]:
                 self.fita3.mudarTransicao(DIREITA, i)
-            while fita3.pegarSimbolo() != "0":
+            while self.fita3.pegarSimbolo() != "0":
                 self.fita3.mudarTransicao(DIREITA, TRASH)
-            
+            #remove os lixos            
             while self.temLixoEsquerda(self.fita3):
                 self.removerLixoAEsquerda(self.fita3)
-            
+            #cabeça de leitura escrita no mesmo lugar
             self.fita3.mudarTransicao(ESQUERDA, self.fita3.pegarSimbolo())
             while self.fita3.pegarSimbolo() == "1":
                 self.fita3.mudarTransicao(ESQUERDA, self.fita3.pegarSimbolo())
             self.fita3.mudarTransicao(DIREITA, self.fita3.pegarSimbolo())
         elif len(elementosTransacao[1]) < len(elementosTransacao[3]):
-            print()
-            
-            
-            
-            
-        print(self.fita3) 
-            
-        
-        """
-        
-        while self.fita1.cabecote != posicaoTransacao
-        print(self.fita1.fita.find(transacao))
-        """
-       
-        transicao = estado + "0" + self.fita2.pegarSimbolo()
-        #self.fita1..find(transacao)
-        print(self)
-        print("\n__________________\n")
-        
+            #substitui crescendo a fita pra esquerda
+            for i in range(len(elementosTransacao[3])):
+                if self.fita3.pegarSimbolo() == "0":
+                    self.fita3.mudarTransicao(ESQUERDA, self.fita3.pegarSimbolo())
+                    self.criarBlankDireita(self.fita3)
+                    self.fita3.mudarTransicao(DIREITA, self.fita3.pegarSimbolo())
+                self.fita3.mudarTransicao(DIREITA, elementosTransacao[3][i])
+            #retorna cabeça de leitura e escrita antes da edição 
+            self.fita3.mudarTransicao(DIREITA, self.fita3.pegarSimbolo())
+            self.esquerdaSimboloMT(self.fita3, "0")
 
+        #move a cabeça de leitura e escrita
+        testeBlank = self.fita3.mudarTransicao(ESQUERDA, self.fita3.pegarSimbolo())
+        if testeBlank == BLANK and elementosTransacao[4] == LEFT:
+            raise Exception('Mt simlada foi quebrada')
+        self.fita3.mudarTransicao(DIREITA, self.fita3.pegarSimbolo())
+        if elementosTransacao[4] == LEFT:
+            self.esquerdaSimboloMT(self.fita3, "0")
+        if elementosTransacao[4] == RIGHT:
+            self.direitaSimboloMT(self.fita3, "0")
+
+        #não aceita
+        return False
+        
+    """
+    remove lixos a esquerda.
+                     v
+    Exemplo: 11######1111001
+               v
+             111111001 
+    """      
     def removerLixoAEsquerda(self, fita):
         inicio = fita.cabecote
     
@@ -169,7 +196,10 @@ class MaquinaDeTuringUniversal:
         while fita.cabecote != inicio:
             fita.mudarTransicao(DIREITA, fita.pegarSimbolo() )
         fita.mudarTransicao(ESQUERDA, fita.pegarSimbolo())
-        
+
+    """
+    verifica se existe lixo a esquerda da cabeça d eleitura e escrita da fita
+    """
     def temLixoEsquerda(self, fita):
         if fita.cabecote == 0:
             return False
@@ -178,10 +208,30 @@ class MaquinaDeTuringUniversal:
         else: 
             return False
 
+    """
+    simula move esquerda da MT
+    """
+    def esquerdaSimboloMT(self, fita, separador):
+        fita.mudarTransicao(ESQUERDA, fita.pegarSimbolo())
+        if fita.pegarSimbolo() == BLANK:
+            fita.mudarTransicao(DIREITA, fita.pegarSimbolo())
+        else:    
+            fita.mudarTransicao(ESQUERDA, fita.pegarSimbolo())
+            while fita.pegarSimbolo() != separador and fita.pegarSimbolo() != BLANK:
+                fita.mudarTransicao(ESQUERDA, fita.pegarSimbolo())
+            fita.mudarTransicao(DIREITA, fita.pegarSimbolo())
 
-
-   
-
+    """
+    simula move direita da MT
+    """
+    def direitaSimboloMT(self, fita, separador):
+        while fita.pegarSimbolo() != separador and fita.pegarSimbolo() != BLANK:
+            fita.mudarTransicao(DIREITA, fita.pegarSimbolo())
+        if fita.pegarSimbolo() == BLANK:
+            fita.mudarTransicao(ESQUERDA, fita.pegarSimbolo())
+            esquerdaSimboloMT(fita, "0")
+        else:
+            fita.mudarTransicao(DIREITA, fita.pegarSimbolo())  
 
     
 #import re
@@ -200,9 +250,10 @@ mc += "11101011011011"
 mc += "000"
 
 mtu = MaquinaDeTuringUniversal(mc)
-#mtu.rodarTransicao()
+mtu.rodarTransicao()
+mtu.rodarTransicao()
 
-
+"""
 def criarBlankDireita(fita):
     #grava primeiro simbolo e ponto de partida
     simboloAntigo = fita.mudarTransicao(DIREITA, TRASH)
@@ -218,9 +269,20 @@ def criarBlankDireita(fita):
         fita.mudarTransicao(ESQUERDA, simbolo)
         fita.mudarTransicao(ESQUERDA, BLANK)
     
-    #volta o simbulo de começo e volta a cabeça de leitura e escrita
+    #volta o Simbolo de começo e volta a cabeça de leitura e escrita
     fita.mudarTransicao(DIREITA, simboloAntigo)
     fita.mudarTransicao(ESQUERDA, fita.pegarSimbolo())
+
+
+
+
+
+
+
+
+fita3 = Fita("1011011011011")
+elementosTransacao = ["1", "11", "11", "11111111111111111", "1"]
+fita3.mudarTransicao(DIREITA, fita3.pegarSimbolo())
 
 def esquerdaSimboloMT(fita, separador):
     fita.mudarTransicao(ESQUERDA, fita.pegarSimbolo())
@@ -241,12 +303,6 @@ def direitaSimboloMT(fita, separador):
     else:
         fita.mudarTransicao(DIREITA, fita.pegarSimbolo())  
 
-    
-
-fita3 = Fita("1011011011011")
-elementosTransacao = ["1", "11", "11", "11111111111111111", "1"]
-fita3.mudarTransicao(DIREITA, fita3.pegarSimbolo())
-
 
 #substitui o simbolo da MT pelo novo simbolo que indica a transicao
 for i in range(len(elementosTransacao[3])):
@@ -259,4 +315,16 @@ for i in range(len(elementosTransacao[3])):
 #retorna cabeça de leitura
 fita3.mudarTransicao(DIREITA, fita3.pegarSimbolo())
 esquerdaSimboloMT(fita3, "0")
+
+
+testeBlank = fita3.mudarTransicao(ESQUERDA, fita3.pegarSimbolo())
+if testeBlank == BLANK and elementosTransacao[4] == LEFT:
+    raise Exception('Mt simlada foi quebrada')
+fita3.mudarTransicao(DIREITA, fita3.pegarSimbolo())
+
+if elementosTransacao[4] == LEFT:
+    esquerdaSimboloMT(fita3, "0")
+if elementosTransacao[4] == RIGHT:
+    direitaSimboloMT(fita3, "0")
 print(fita3)
+"""
