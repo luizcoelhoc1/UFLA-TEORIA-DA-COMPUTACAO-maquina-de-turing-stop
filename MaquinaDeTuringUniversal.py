@@ -46,22 +46,22 @@ class MaquinaDeTuringUniversal:
         if len(split) != 4:
             print("nao possui apenas 3 separadores 000")
         #verifica transações corretas
-        transacoes = split[1].split("00")    
+        self.transicoes = split[1].split("00")    
         headTransicoes = list()  #para verificar o determinismo  
-        for transacao in transacoes:
+        for transicao in self.transicoes:
             #verifica se a transicao é uma quintupla
-            if len(transacao.split("0")) != 5:
-                print("transacao com 0 errados") 
+            if len(transicao.split("0")) != 5:
+                print("transicao com 0 errados") 
             #verifica se tem apenas 1's na transicao
-            elementosTransicao = transacao.split("0")
+            elementosTransicao = transicao.split("0")
             for elementoTransicao in elementosTransicao:
                 for digito in elementoTransicao:
                     if digito != "1":
                         print("elementos da transicoes nao sao apenas 1's")
-            #verifica a direção da transacao
+            #verifica a direção da transicao
             direcao = elementosTransicao[4]
             if len(direcao) != 1 and len(direcao) != 2:
-                print("transacao com direcao desconhecida")
+                print("transicao com direcao desconhecida")
         #verifica o determinismo
             headTransicoes.append(elementosTransicao[0] + "0" + elementosTransicao[1])
         if len(set(headTransicoes)) != len(headTransicoes):
@@ -118,16 +118,16 @@ class MaquinaDeTuringUniversal:
         self.fita1.rebobinar()
         while self.fita1.cabecote != posicaoTransacao:
             self.fita1.mudarTransicao(DIREITA, self.fita1.pegarSimbolo())
-        transacao = ""
-        while transacao[-2:] != "00":
-            transacao += self.fita1.mudarTransicao(DIREITA, self.fita1.pegarSimbolo())
+        transicao = ""
+        while transicao[-2:] != "00":
+            transicao += self.fita1.mudarTransicao(DIREITA, self.fita1.pegarSimbolo())
             posicaoTransacao += 1
-        transacao = transacao[:-2]
-        elementosTransacao = transacao.split("0")
+        transicao = transicao[:-2]
+        elementosTransicao = transicao.split("0")
         #muda MT de estado
-        self.fita2.recomecarFita(elementosTransacao[2])
+        self.fita2.recomecarFita(elementosTransicao[2])
         #Simula fita infinita
-        if elementosTransacao[4] == RIGHT:
+        if elementosTransicao[4] == RIGHT:
             cabecote = self.fita3.cabecote
             self.direitaSimboloMT(self.fita3, "0")
             if cabecote == self.fita3.cabecote:
@@ -142,9 +142,9 @@ class MaquinaDeTuringUniversal:
                 self.fita3.mudarTransicao(ESQUERDA, self.fita3.pegarSimbolo())
             self.esquerdaSimboloMT(self.fita3, "0")
         #muda Simbolo
-        if len(elementosTransacao[1]) > len(elementosTransacao[3]):
+        if len(elementosTransicao[1]) > len(elementosTransicao[3]):
             #substitui "1" no "111" fazendo "1##"
-            for i in elementosTransacao[2]:
+            for i in elementosTransicao[2]:
                 self.fita3.mudarTransicao(DIREITA, i)
             while self.fita3.pegarSimbolo() != "0":
                 self.fita3.mudarTransicao(DIREITA, TRASH)
@@ -156,25 +156,25 @@ class MaquinaDeTuringUniversal:
             while self.fita3.pegarSimbolo() == "1":
                 self.fita3.mudarTransicao(ESQUERDA, self.fita3.pegarSimbolo())
             self.fita3.mudarTransicao(DIREITA, self.fita3.pegarSimbolo())
-        elif len(elementosTransacao[1]) < len(elementosTransacao[3]):
+        elif len(elementosTransicao[1]) < len(elementosTransicao[3]):
             #substitui crescendo a fita pra esquerda
-            for i in range(len(elementosTransacao[3])):
+            for i in range(len(elementosTransicao[3])):
                 if self.fita3.pegarSimbolo() == "0":
                     self.fita3.mudarTransicao(ESQUERDA, self.fita3.pegarSimbolo())
                     self.criarBlankDireita(self.fita3)
                     self.fita3.mudarTransicao(DIREITA, self.fita3.pegarSimbolo())
-                self.fita3.mudarTransicao(DIREITA, elementosTransacao[3][i])
+                self.fita3.mudarTransicao(DIREITA, elementosTransicao[3][i])
             #retorna cabeça de leitura e escrita antes da edição 
             self.fita3.mudarTransicao(DIREITA, self.fita3.pegarSimbolo())
             self.esquerdaSimboloMT(self.fita3, "0")
         #move a cabeça de leitura e escrita
         testeBlank = self.fita3.mudarTransicao(ESQUERDA, self.fita3.pegarSimbolo())
-        if testeBlank == BLANK and elementosTransacao[4] == LEFT:
+        if testeBlank == BLANK and elementosTransicao[4] == LEFT:
             raise Exception('Mt simlada foi quebrada')
         self.fita3.mudarTransicao(DIREITA, self.fita3.pegarSimbolo())
-        if elementosTransacao[4] == LEFT:
+        if elementosTransicao[4] == LEFT:
             self.esquerdaSimboloMT(self.fita3, "0")
-        if elementosTransacao[4] == RIGHT:
+        if elementosTransicao[4] == RIGHT:
             self.direitaSimboloMT(self.fita3, "0")
         #não aceita
         return False

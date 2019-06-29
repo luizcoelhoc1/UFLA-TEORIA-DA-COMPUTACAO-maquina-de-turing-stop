@@ -24,8 +24,11 @@ class MTUcomHeuristicas(MaquinaDeTuringUniversal):
 
 
     def executar_simulacao(self):
+        if self.verifica_qerro():
+            return False
         while not self.simularTransicao():
-            self.printBonito()
+            pass
+            #self.printBonito()
             #self.mostrar_progresso()
         return True
 
@@ -35,16 +38,23 @@ class MTUcomHeuristicas(MaquinaDeTuringUniversal):
         if status:
             return "A MT simulada aceita w e para."
         else:
-            return "A MT entra em loop com a entrada w." 
+            return "A MT entra em loop com a entrada w."
 
 
-    def verifica_loop(self, estado):
-        numTransEstado = 0
+    def verifica_qerro(self):
+        NUM_SIMBOLOS = 3
+        num_transicoes_estado = {}
         for transicao in self.transicoes:
-            elementosTransicao = transicao.split("0")
-            if elementosTransicao[0] == estado:
-                numTransEstado += 1
-        return numTransEstado == 3
+            elementos = transicao.split("0")
+            if elementos[0] in num_transicoes_estado:
+                num_transicoes_estado[elementos[0]] += 1
+            else:
+                num_transicoes_estado[elementos[0]] = 1
+        for estado, num_transicoes in num_transicoes_estado.items():
+            #print('TRANSICOES POR ESTADO:', estado, num_transicoes)
+            if num_transicoes >= NUM_SIMBOLOS:
+                return True
+        return False
 
     '''
     def andrew():
