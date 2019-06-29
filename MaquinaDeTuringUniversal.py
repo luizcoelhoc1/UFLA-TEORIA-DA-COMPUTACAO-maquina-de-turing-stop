@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
+Created on Mon Jun  3 19:54:48 2019
 
 @author: luizc
 """
