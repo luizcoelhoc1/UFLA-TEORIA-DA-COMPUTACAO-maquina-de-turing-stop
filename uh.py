@@ -43,9 +43,9 @@ class MTUcomHeuristicas(MaquinaDeTuringUniversal):
         """Retorna string informando se a mt simulada para ou entra em loop."""
         status = self.executar_simulacao()
         if status:
-            return "A MT simulada aceita w e para."
+            return "A MT simulada aceita w e para.\n"
         else:
-            return "A MT entra em loop com a entrada w."
+            return "A MT entra em loop com a entrada w.\n"
 
     def verifica_qerro(self):
         NUM_SIMBOLOS = 3
