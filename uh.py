@@ -88,6 +88,7 @@ class MTUcomHeuristicas(MaquinaDeTuringUniversal):
         simboloAtual =  self.simboloAtualMT() 
         posicaoTransacao = self.fita1.fita.find("00" + estadoAtual + "0" + simboloAtual + "0") + 2
 
+        self.fita1.rebobinar()
         while self.fita1.cabecote != posicaoTransacao:
             self.fita1.mudarTransicao(DIREITA, self.fita1.pegarSimbolo())
         transacao = ""
