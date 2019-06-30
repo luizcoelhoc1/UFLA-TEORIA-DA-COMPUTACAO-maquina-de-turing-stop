@@ -12,6 +12,7 @@ import sys
 import itertools
 from MaquinaDeTuringUniversal import MaquinaDeTuringUniversal, DIREITA
 
+
 class MTUcomHeuristicas(MaquinaDeTuringUniversal):
     """Estende a MTU com heurísticas para identificar se ela para ou entra em loop."""
 
