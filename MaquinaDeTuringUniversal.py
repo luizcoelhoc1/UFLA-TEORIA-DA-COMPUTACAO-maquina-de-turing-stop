@@ -31,6 +31,7 @@ class MaquinaDeTuringUniversal:
         fita1 -- entrada da MTU, com string no formato R(M)w.
         fita2 -- estado atual da simulação. 
         fita3 -- usada na simulação de M com entrada w.
+        palavra -- armazena w
     """
 
     def __init__(self, entrada):
@@ -48,10 +49,10 @@ class MaquinaDeTuringUniversal:
         #verifica transações corretas
         self.transicoes = split[1].split("00")    
         headTransicoes = list()  #para verificar o determinismo  
-        for transicao in self.transicoes:
+        for n, transicao in enumerate(self.transicoes):
             #verifica se a transicao é uma quintupla
             if len(transicao.split("0")) != 5:
-                print("transicao com 0 errados") 
+                print("transicao {} com 0 errados".format(n))
             #verifica se tem apenas 1's na transicao
             elementosTransicao = transicao.split("0")
             for elementoTransicao in elementosTransicao:
@@ -67,15 +68,15 @@ class MaquinaDeTuringUniversal:
         if len(set(headTransicoes)) != len(headTransicoes):
             print("maquina nao deterministica")
         #verifica palavra
-        palavra = split[2]
-        letras = palavra.split("0")
+        self.palavra = split[2]
+        letras = self.palavra.split("0")
         for letra in letras:
             if len(letra) > 3 and len(letra) < 1:
                 print("Palavra em formato errado")
         #inicializa fitas            
         self.fita1 = Fita("000" + split[1] + "000")
         self.fita2 = Fita("1")
-        self.fita3 = Fita(palavra)
+        self.fita3 = Fita(self.palavra)
         self.fita3.mudarTransicao(DIREITA, BLANK)
 
     def __str__(self):
