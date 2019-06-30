@@ -15,7 +15,7 @@ from uh import MTUcomHeuristicas
 def le_arquivo(arquivo):
     with open(arquivo) as arquivo:
         mt = arquivo.read().replace('\n', '')
-        mt = arquivo.read().replace(' ', '')
+        #mt = arquivo.read().replace(' ', '')
         print('Simulando {} ...'.format(arquivo.name))
         return mt
 
@@ -32,7 +32,6 @@ def main():
     parser.add_argument('-d', '--dir', type=str, nargs=1,
                         help='diretório contendo arquivos texto de R(M)w em \
                         representação unária')
-    #parser.add_argument('-v', '--verbose', help='maior verbosidade na saída', action='store_true')
     args = parser.parse_args()
 
     if args.dir:

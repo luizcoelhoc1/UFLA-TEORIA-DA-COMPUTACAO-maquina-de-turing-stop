@@ -7,25 +7,17 @@ Estende a classe MaquinaDeTuringUniversal, incluindo heurísticas para
 identificar se a MT para ou entra em loop com uma determinada entrada.
 """
 
+
 import sys
 import itertools
-from MaquinaDeTuringUniversal import MaquinaDeTuringUniversal
+from MaquinaDeTuringUniversal import MaquinaDeTuringUniversal, DIREITA
 
 class MTUcomHeuristicas(MaquinaDeTuringUniversal):
     """Estende a MTU com heurísticas para identificar se ela para ou entra em loop."""
 
-    spinner = itertools.cycle(['-', '/', '|', '\\'])
-
-    # experimental
-    def mostrar_progresso(self):
-        sys.stdout.write(self.spinner.next())  # write the next character
-        sys.stdout.flush()                     # flush stdout buffer (actual character display)
-        sys.stdout.write('\b')                 # erase the last written char
-
-
     def executar_simulacao(self):
         # seta e verifica os estados criticos
-        self.verifica_TransicoesCriticas(self)
+        #self.verifica_TransicoesCriticas()
         # verifica se existem loop para todos simbolos em alguma transicao
         q_erro = self.verifica_qerro()
         # verifica se o número de iterações ultrapassa o numero maximo de combinações 
@@ -33,15 +25,14 @@ class MTUcomHeuristicas(MaquinaDeTuringUniversal):
         iteracoes = 0
         # executa a simulação
         while not self.simularTransicao():
-            if self.verifica_TransicaoAtualIsCritica:
-                return False
+            #if self.verifica_TransicaoAtualIsCritica():
+            #    return False
             if self.estadoAtualMT() == q_erro:
                 return False
             iteracoes += 1
             if iteracoes >= max_combinacoes:
                 return False
             #self.printBonito()
-            #self.mostrar_progresso()
         return True
 
     def resultado(self):
