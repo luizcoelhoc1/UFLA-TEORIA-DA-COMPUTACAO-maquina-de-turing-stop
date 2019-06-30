@@ -49,7 +49,8 @@ class MaquinaDeTuringUniversal:
         #verifica transações corretas
         self.transicoes = split[1].split("00")    
         headTransicoes = list()  #para verificar o determinismo  
-        for n, transicao in enumerate(self.transicoes):
+        #for n, transicao in enumerate(self.transicoes):
+        for transicao in self.transicoes:
             #verifica se a transicao é uma quintupla
             if len(transicao.split("0")) != 5:
                 print("transicao {} com 0 errados".format(n))

@@ -29,6 +29,7 @@ class MTUcomHeuristicas(MaquinaDeTuringUniversal):
             iteracoes += 1
             if iteracoes >= max_combinacoes:
                 return False
+            #print(self)
             #self.printBonito()
         return True
 

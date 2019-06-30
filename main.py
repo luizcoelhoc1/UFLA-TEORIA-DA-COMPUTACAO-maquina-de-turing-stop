@@ -3,7 +3,7 @@
 """
 main.py
 
-
+Lê o arquivo com R(M)w e imprime resultado da simulação
 """
 
 import os
