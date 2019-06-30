@@ -53,10 +53,11 @@ class MTUcomHeuristicas(MaquinaDeTuringUniversal):
         num_transicoes_estado = {}
         for transicao in self.transicoes:
             elementos = transicao.split("0")
-            if elementos[0] in num_transicoes_estado:
-                num_transicoes_estado[elementos[0]] += 1
-            else:
-                num_transicoes_estado[elementos[0]] = 1
+            if elementos[0] == elementos[2]:
+                if elementos[0] in num_transicoes_estado:
+                    num_transicoes_estado[elementos[0]] += 1
+                else:
+                    num_transicoes_estado[elementos[0]] = 1
         for estado, num_transicoes in num_transicoes_estado.items():
             #print('TRANSICOES POR ESTADO:', estado, num_transicoes)
             if num_transicoes >= NUM_SIMBOLOS:
