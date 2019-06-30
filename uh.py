@@ -25,13 +25,14 @@ class MTUcomHeuristicas(MaquinaDeTuringUniversal):
 
     def executar_simulacao(self):
         # verifica se existem loop para todos simbolos em alguma transicao
-        if self.verifica_qerro():
-            return False
+        q_erro = self.verifica_qerro()
         # verifica se o número de iterações ultrapassa o numero maximo de combinações 
         max_combinacoes = self.calcula_max_combinacoes()
         iteracoes = 0
         # executa a simulação
         while not self.simularTransicao():
+            if self.estadoAtualMT() == q_erro:
+                return False
             iteracoes += 1
             if iteracoes >= max_combinacoes:
                 return False
@@ -52,15 +53,15 @@ class MTUcomHeuristicas(MaquinaDeTuringUniversal):
         num_transicoes_estado = {}
         for transicao in self.transicoes:
             elementos = transicao.split("0")
-            if elementos[0] in num_transicoes_estado:
-                num_transicoes_estado[elementos[0]] += 1
-            else:
-                num_transicoes_estado[elementos[0]] = 1
+            if elementos[0] == elementos[2]:
+                if elementos[0] in num_transicoes_estado:
+                    num_transicoes_estado[elementos[0]] += 1
+                else:
+                    num_transicoes_estado[elementos[0]] = 1
         for estado, num_transicoes in num_transicoes_estado.items():
             #print('TRANSICOES POR ESTADO:', estado, num_transicoes)
             if num_transicoes >= NUM_SIMBOLOS:
-                return True
-        return False
+                return estado
 
     def calcula_max_combinacoes(self):
         num_transicoes_mt = len(self.transicoes)
