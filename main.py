@@ -15,6 +15,7 @@ from uh import MTUcomHeuristicas
 def le_arquivo(arquivo):
     with open(arquivo) as arquivo:
         mt = arquivo.read().replace('\n', '')
+        mt = arquivo.read().replace(' ', '')
         print('Simulando {} ...'.format(arquivo.name))
         return mt
 
