@@ -18,7 +18,7 @@ class MTUcomHeuristicas(MaquinaDeTuringUniversal):
 
     def executar_simulacao(self):
         # seta e verifica os estados criticos
-        #self.verifica_TransicoesCriticas()
+        self.verifica_TransicoesCriticas()
         # verifica se existem loop para todos simbolos em alguma transicao
         q_erro = self.verifica_qerro()
         # verifica se o número de iterações ultrapassa o numero maximo de combinações 
@@ -26,8 +26,8 @@ class MTUcomHeuristicas(MaquinaDeTuringUniversal):
         iteracoes = 0
         # executa a simulação
         while not self.simularTransicao():
-            #if self.verifica_TransicaoAtualIsCritica():
-            #    return False
+            if self.verifica_TransicaoAtualIsCritica():
+                return False
             if self.estadoAtualMT() == q_erro:
                 return False
             iteracoes += 1
@@ -92,6 +92,7 @@ class MTUcomHeuristicas(MaquinaDeTuringUniversal):
         simboloAtual =  self.simboloAtualMT() 
         posicaoTransacao = self.fita1.fita.find("00" + estadoAtual + "0" + simboloAtual + "0") + 2
 
+        self.fita1.rebobinar()
         while self.fita1.cabecote != posicaoTransacao:
             self.fita1.mudarTransicao(DIREITA, self.fita1.pegarSimbolo())
         transacao = ""
