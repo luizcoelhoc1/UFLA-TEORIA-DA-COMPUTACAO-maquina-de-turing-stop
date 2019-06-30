@@ -24,10 +24,17 @@ class MTUcomHeuristicas(MaquinaDeTuringUniversal):
 
 
     def executar_simulacao(self):
+        # verifica se existem loop para todos simbolos em alguma transicao
         if self.verifica_qerro():
             return False
+        # verifica se o número de iterações ultrapassa o numero maximo de combinações 
+        max_combinacoes = self.calcula_max_combinacoes()
+        iteracoes = 0
+        # executa a simulação
         while not self.simularTransicao():
-            pass
+            iteracoes += 1
+            if iteracoes >= max_combinacoes:
+                return False
             #self.printBonito()
             #self.mostrar_progresso()
         return True
@@ -39,7 +46,6 @@ class MTUcomHeuristicas(MaquinaDeTuringUniversal):
             return "A MT simulada aceita w e para."
         else:
             return "A MT entra em loop com a entrada w."
-
 
     def verifica_qerro(self):
         NUM_SIMBOLOS = 3
@@ -56,18 +62,11 @@ class MTUcomHeuristicas(MaquinaDeTuringUniversal):
                 return True
         return False
 
-    '''
-    def andrew():
-        """Detecta loop pela repetição de estados. Ex: (q0 -q1 - q2 - q0) *2"""
-        if ((len(self.buffer) != 1) and (self.buffer[0] == self.buffer[len(self.buffer)-1])):
-            self.cicloCount += 1
-            self.buffer = []
-        if ((self.cicloCount == 2) ) :
-            raise Exception('Entrou em loop, ciclo detectado')
-    '''
-
-    def max_combinacoes(self):
-        pass
-
-    def verifica_max_combinacoes(self):
-        pass
+    def calcula_max_combinacoes(self):
+        num_transicoes_mt = len(self.transicoes)
+        #print(num_transicoes_mt)
+        tam_palavra = len(self.palavra.split('0'))
+        #print(tam_palavra)
+        num_simbolos = 3
+        _max = num_transicoes_mt * tam_palavra * (num_simbolos ** tam_palavra)
+        return _max
